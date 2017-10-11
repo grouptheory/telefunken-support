@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "library(pryr)\nn = 100000\np = 500\n\nbar = function(Y) {\n  print(pryr:::address(Y))\n  print(pryr:::address(Y))\n}\n\nfoo = function(X) {\n  print(pryr:::address(X))\n  bar(X)\n}\n\nfoo2 <- function(x) {\n  y <- x\n  print(y[1,1])\n  y\n}\n\nX <- matrix(rep(1,n*p), n, p)\nl <- list()\nfor(i in 1:10000) l[[i]] <- foo2(X)\nprint(pryr::address(X))\nsapply(l, function(x) address(x))[1:10]\nfoo(X)",
+    "created" : 1488589377634.000,
+    "dirty" : true,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "1641479966",
+    "id" : "36EC994C",
+    "lastKnownWriteTime" : 7234013803199856640,
+    "last_content_update" : 1488612337188,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
