@@ -1,6 +1,6 @@
 Package: pnspop
 Type: Package
-Title: Population Size estimation from Privatized Network Sampling (PNS) or Responant Driven Sampling (RDS) data
+Title: Population Size Estimation from Privatized Network Sampling (PNS) or Responant Driven Sampling (RDS) Data
 Version: 0.1.0
 Author: Ian E. Fellows
 Maintainer: Ian E. Fellows <ian@fellstat.com>
