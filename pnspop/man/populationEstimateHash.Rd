@@ -4,7 +4,8 @@
 \alias{populationEstimateHash}
 \title{Estimate population size given privatized (hashed) neighbor identifiers}
 \usage{
-populationEstimateHash(subject, recruiter, subjectHash, degree, nbrs, rho)
+populationEstimateHash(subject, recruiter, subjectHash, degree, nbrs,
+  rho = NULL)
 }
 \arguments{
 \item{subject}{The integer ids of each subject}
@@ -18,12 +19,14 @@ populationEstimateHash(subject, recruiter, subjectHash, degree, nbrs, rho)
 \item{nbrs}{A list, each element indicating the hashed identifier of the neighbors of each subject,
 or a random subset of those neighbors.}
 
-\item{rho}{The probability two random individuals have the same hash value}
+\item{rho}{The probability two random individuals have the same hash value.
+If NULL this is estimated from the number of hash collisions in subjectHash.}
 }
 \value{
 A list with elements:
 'estimate': The n_2 population size estimate, adjusted for hashing
 'crossSeedEstimate' : The n_3 cross-seed estimate, adjusted for hashing
+'rho': The value of rho
 }
 \description{
 Estimate population size given privatized (hashed) neighbor identifiers
@@ -31,7 +34,7 @@ Estimate population size given privatized (hashed) neighbor identifiers
 \examples{
 set.seed(1)
 n <- 1000 #pop size
-hashSize <- 10000
+hashSize <- 1000
 rho <- 1 / hashSize
 hash <- floor(runif(n, min = 0, max=hashSize))
 d <- rpois(n,lambda = 3) + 1
@@ -45,6 +48,10 @@ nbrs2 <- nbrs[rds$subject]
 nbrs_hash <- lapply(nbrs2,function(x) hash[x])
 populationEstimateHash(rds$subject,rds$recruiter,
      subj_hash, d[rds$subject], nbrs_hash, rho)
+
+#rho estimated from data
+populationEstimateHash(rds$subject,rds$recruiter,
+     subj_hash, d[rds$subject], nbrs_hash)
 }
 \references{
 Khan, Bilal; Lee, Hsuan-Wei; Fellows, Ian; Dombrowski, Kirk One-step Estimation of Networked Population Size: Respondent-Driven Capture-Recapture with Anonymity eprint arXiv:1710.03953, 2017

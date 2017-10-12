@@ -229,17 +229,19 @@ populationEstimate <- function(subject, recruiter, degree, nbrs){
 #' @param degree The degree of each subject
 #' @param nbrs A list, each element indicating the hashed identifier of the neighbors of each subject,
 #' or a random subset of those neighbors.
-#' @param rho The probability two random individuals have the same hash value
+#' @param rho The probability two random individuals have the same hash value.
+#' If NULL this is estimated from the number of hash collisions in subjectHash.
 #' @return
 #' A list with elements:
 #' 'estimate': The n_2 population size estimate, adjusted for hashing
 #' 'crossSeedEstimate' : The n_3 cross-seed estimate, adjusted for hashing
+#' 'rho': The value of rho
 #' @references
 #' Khan, Bilal; Lee, Hsuan-Wei; Fellows, Ian; Dombrowski, Kirk One-step Estimation of Networked Population Size: Respondent-Driven Capture-Recapture with Anonymity eprint arXiv:1710.03953, 2017
 #' @examples
 #' set.seed(1)
 #' n <- 1000 #pop size
-#' hashSize <- 10000
+#' hashSize <- 1000
 #' rho <- 1 / hashSize
 #' hash <- floor(runif(n, min = 0, max=hashSize))
 #' d <- rpois(n,lambda = 3) + 1
@@ -253,12 +255,20 @@ populationEstimate <- function(subject, recruiter, degree, nbrs){
 #' nbrs_hash <- lapply(nbrs2,function(x) hash[x])
 #' populationEstimateHash(rds$subject,rds$recruiter,
 #'      subj_hash, d[rds$subject], nbrs_hash, rho)
+#'
+#' #rho estimated from data
+#' populationEstimateHash(rds$subject,rds$recruiter,
+#'      subj_hash, d[rds$subject], nbrs_hash)
 #' @export
-populationEstimateHash <- function(subject, recruiter, subjectHash, degree, nbrs, rho){
+populationEstimateHash <- function(subject, recruiter, subjectHash, degree, nbrs, rho=NULL){
   nbrs2 <- list()
   nbrs2[subject] <- nbrs
   nbrs <- nbrs2
   ns <- length(subject)
+  if(is.null(rho)){
+    nMatches <- sum(sapply(subjectHash,function(h) sum(subjectHash==h) - 1))
+    rho <- nMatches / (ns*(ns-1))
+  }
   outSet <- apply(cbind(subject,recruiter), 1, function(x){
     excl <- subjectHash[recruiter == x[1]]
     if(x[2] != -1)
@@ -333,7 +343,8 @@ populationEstimateHash <- function(subject, recruiter, subjectHash, degree, nbrs
   optCross <- uniroot(function(N) NTildaCross(N) - N, interval=c(2, 7000000000))
   result <- list(
     estimate=opt$root,
-    crossSeedEstimate= optCross$root
+    crossSeedEstimate= optCross$root,
+    rho=rho
   )
   result
 }
