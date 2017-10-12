@@ -83,7 +83,6 @@ sampRDS <- function(el, d, ns, g, ss, biased=TRUE,pr = c(0,.1,.9)){
   recr <- rep(-1,ns)
   time <- 0 + (1:ns)/10000000
   rcTime <- rexp(ns)
-  #v <- rep(-1,ns)
   t1 <- time
   while(length(samp) < ss){
     subjIndex <- which.min(t1 + rcTime)
@@ -95,7 +94,6 @@ sampRDS <- function(el, d, ns, g, ss, biased=TRUE,pr = c(0,.1,.9)){
       time <- c(time,max(time+1))
       rcTime <- c(rcTime,rexp(1))
       t1 <- c(t1,max(time+1))
-      #v <- c(v,-1)
     }else{
       t <- t1[subjIndex] + rcTime[subjIndex]
       t1[subjIndex] <- NA
@@ -116,11 +114,10 @@ sampRDS <- function(el, d, ns, g, ss, biased=TRUE,pr = c(0,.1,.9)){
         time <- c(time,tm)
         t1 <- c(t1,tm)
         rcTime <- c(rcTime,rexp(nr))
-        #v <- c(v,nbrs[s,2])
       }
     }
   }
-  data.frame(subject=samp,recruiter=recr,time=time)#,v=v)
+  data.frame(subject=samp,recruiter=recr,time=time)
 }
 
 
@@ -191,7 +188,7 @@ populationEstimate <- function(subject, recruiter, degree, nbrs){
   m <- length(outSet[outSet %in% subject])
   dSample <- mean(degree) - 1
   dPopulation <- ns / sum(1/degree)
-  #browser()
+
   result <- list(
     estimate=(dSample / dPopulation) * ns * length(outSet) / m ,
     noDegreeEstimate=ns * length(outSet) / m
@@ -220,8 +217,6 @@ populationEstimate <- function(subject, recruiter, degree, nbrs){
       length(subject[seed != s]) * dSample / dPopulation
     crossSeedEstimateDenom <- crossSeedEstimateDenom + m
   }
-  #print(crossSeedEstimateNum)
-  #print(crossSeedEstimateDenom)
   result$crossSeedEstimate <- crossSeedEstimateNum / crossSeedEstimateDenom
   result
 }
@@ -276,7 +271,6 @@ populationEstimateHash <- function(subject, recruiter, subjectHash, degree, nbrs
     }
     nb
   })
-  #browser()
   dSample <- mean(degree) - 1
   dPopulation <- ns / sum(1/degree)
   matchSet <- lapply(outSet, function(x) x[x %in% subjectHash])
@@ -307,8 +301,6 @@ populationEstimateHash <- function(subject, recruiter, subjectHash, degree, nbrs
         if(x[2] != -1)
           excl <- c(excl, subjectHash[match(x[2], subject)])
         nb <- nbrs[[x[1]]]
-        #excl <- c(hash[x[2]], hash[subject[recruiter == x[1]]])
-        #nb <- hash[nbrs[[x[1]]]]
         for(e in excl){
           i <- which(nb %in% e)
           if(length(i) > 0)
@@ -335,8 +327,6 @@ populationEstimateHash <- function(subject, recruiter, subjectHash, degree, nbrs
       crossSeedEstimateNum <- crossSeedEstimateNum + length(unlist(outSet)) *
         length(subject[seed != s]) * dSample / dPopulation
       crossSeedEstimateDenom <- crossSeedEstimateDenom + m
-      #print(length(unlist(outSet)) *
-      #        length(subject[seed != s]) * dSample / dPopulation / m)
     }
     crossSeedEstimateNum / crossSeedEstimateDenom
   }
